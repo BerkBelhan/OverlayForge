@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, "copilot/**" ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  # ─── Build & Test (Windows) ──────────────────────────────────────────────
+  build-and-test:
+    name: Build and Test
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore OverlayForge.sln
+
+      - name: Build (Release)
+        run: dotnet build OverlayForge.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: >
+          dotnet test OverlayForge.sln
+          --configuration Release
+          --no-build
+          --verbosity normal
+          --logger "trx;LogFileName=test-results.trx"
+          --collect:"XPlat Code Coverage"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: "**/*.trx"
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: "**/coverage.cobertura.xml"
+
+  # ─── Publish (Release only) ─────────────────────────────────────────────
+  publish:
+    name: Publish Portable Build
+    runs-on: windows-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore OverlayForge.sln
+
+      - name: Publish portable (self-contained)
+        run: >
+          dotnet publish src/OverlayForge.UI/OverlayForge.UI.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output ./publish/portable
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+
+      - name: Upload portable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OverlayForge-portable-win-x64
+          path: ./publish/portable/
+          retention-days: 30
