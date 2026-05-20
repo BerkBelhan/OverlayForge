@@ -5,7 +5,7 @@ namespace OverlayForge.Win32.Interop;
 /// <summary>
 /// P/Invoke declarations for Win32 API functions used by OverlayForge.
 /// </summary>
-internal static partial class NativeMethods
+public static partial class NativeMethods
 {
     // ─── Window Styles ───────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ internal static partial class NativeMethods
 
     // ─── Window messages ─────────────────────────────────────────────────────
 
-    internal const int WM_HOTKEY = 0x0312;
+    public const int WM_HOTKEY = 0x0312;
     internal const int WM_CLOSE = 0x0010;
     internal const int WM_NCHITTEST = 0x0084;
     internal const int WM_NCLBUTTONDOWN = 0x00A1;
@@ -84,7 +84,7 @@ internal static partial class NativeMethods
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool RegisterHotKey(
+    public static partial bool RegisterHotKey(
         IntPtr hWnd,
         int id,
         uint fsModifiers,
@@ -92,7 +92,7 @@ internal static partial class NativeMethods
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool UnregisterHotKey(IntPtr hWnd, int id);
+    public static partial bool UnregisterHotKey(IntPtr hWnd, int id);
 
     [LibraryImport("user32.dll")]
     internal static partial void PostQuitMessage(int nExitCode);
