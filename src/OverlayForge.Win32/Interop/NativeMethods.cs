@@ -14,7 +14,7 @@ public static partial class NativeMethods
 
     internal const int WS_EX_LAYERED = 0x00080000;
     internal const int WS_EX_TRANSPARENT = 0x00000020;
-    internal const int WS_EX_TOOLWINDOW = 0x00000080;
+    public const int WS_EX_TOOLWINDOW = 0x00000080;
     internal const int WS_EX_NOACTIVATE = 0x08000000;
     internal const int WS_EX_TOPMOST = 0x00000008;
 
@@ -47,11 +47,11 @@ public static partial class NativeMethods
 
     // ─── Hotkey modifiers ─────────────────────────────────────────────────────
 
-    internal const int MOD_ALT = 0x0001;
-    internal const int MOD_CONTROL = 0x0002;
-    internal const int MOD_SHIFT = 0x0004;
-    internal const int MOD_WIN = 0x0008;
-    internal const int MOD_NOREPEAT = 0x4000;
+    public const int MOD_ALT = 0x0001;
+    public const int MOD_CONTROL = 0x0002;
+    public const int MOD_SHIFT = 0x0004;
+    public const int MOD_WIN = 0x0008;
+    public const int MOD_NOREPEAT = 0x4000;
 
     // ─── DWM ──────────────────────────────────────────────────────────────────
 
