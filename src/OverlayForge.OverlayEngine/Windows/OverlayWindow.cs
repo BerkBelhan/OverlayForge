@@ -72,7 +72,7 @@ public sealed class OverlayWindow : Window
         };
 
         // Resize grip overlay (bottom-right corner)
-        var resizeGrip = new Rectangle
+        var resizeGrip = new System.Windows.Shapes.Rectangle
         {
             Width = 16,
             Height = 16,
@@ -283,5 +283,4 @@ public sealed class OverlayWindow : Window
     }
 }
 
-// Dummy Rectangle so we don't need to import System.Windows.Shapes separately
-file sealed class Rectangle : System.Windows.Shapes.Rectangle { }
+
