@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Forms;
 using OverlayForge.UI.ViewModels;
 using OverlayForge.Win32.Helpers;
+using System.Drawing;
 
 namespace OverlayForge.UI.Views;
 
