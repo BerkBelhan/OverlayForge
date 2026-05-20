@@ -8,7 +8,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>OverlayForge</AssemblyName>
     <RootNamespace>OverlayForge.UI</RootNamespace>
-    <ApplicationIcon>Resources\overlayforge.ico</ApplicationIcon>
+    `<ApplicationIcon>Resources\overlayforge.ico</ApplicationIcon>`
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <StartupObject>OverlayForge.UI.App</StartupObject>
   </PropertyGroup>
