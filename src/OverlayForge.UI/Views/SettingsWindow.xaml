@@ -33,11 +33,11 @@
             <!-- ── General Tab ─────────────────────────────────────── -->
             <TabItem Header="General">
                 <ScrollViewer Padding="16" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Spacing="16">
+                    <StackPanel>
 
                         <GroupBox Header="Opacity" Foreground="{StaticResource TextPrimaryBrush}"
-                                  BorderBrush="{StaticResource BorderBrush}">
-                            <StackPanel Padding="8" Spacing="8">
+                                  BorderBrush="{StaticResource BorderBrush}" Margin="0,0,0,16">
+                            <StackPanel Margin="8">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="180"/>
@@ -60,14 +60,14 @@
                         </GroupBox>
 
                         <GroupBox Header="Snapping" Foreground="{StaticResource TextPrimaryBrush}"
-                                  BorderBrush="{StaticResource BorderBrush}">
-                            <StackPanel Padding="8" Spacing="8">
+                                  BorderBrush="{StaticResource BorderBrush}" Margin="0,0,0,16">
+                            <StackPanel Margin="8">
                                 <CheckBox Content="Snap to screen edges"
-                                          IsChecked="{Binding SnapToEdges}"/>
+                                          IsChecked="{Binding SnapToEdges}" Margin="0,0,0,8"/>
                                 <CheckBox Content="Snap to center lines"
-                                          IsChecked="{Binding SnapToCenterLines}"/>
+                                          IsChecked="{Binding SnapToCenterLines}" Margin="0,0,0,8"/>
                                 <CheckBox Content="Snap to other overlays"
-                                          IsChecked="{Binding SnapToOtherOverlays}"/>
+                                          IsChecked="{Binding SnapToOtherOverlays}" Margin="0,0,0,8"/>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="180"/>
@@ -90,11 +90,11 @@
 
                         <GroupBox Header="Startup &amp; Behavior" Foreground="{StaticResource TextPrimaryBrush}"
                                   BorderBrush="{StaticResource BorderBrush}">
-                            <StackPanel Padding="8" Spacing="8">
+                            <StackPanel Margin="8">
                                 <CheckBox Content="Start minimized to system tray"
-                                          IsChecked="{Binding StartMinimized}"/>
+                                          IsChecked="{Binding StartMinimized}" Margin="0,0,0,8"/>
                                 <CheckBox Content="Minimize to tray (instead of taskbar)"
-                                          IsChecked="{Binding MinimizeToTray}"/>
+                                          IsChecked="{Binding MinimizeToTray}" Margin="0,0,0,8"/>
                                 <CheckBox Content="Auto-load last used preset on startup"
                                           IsChecked="{Binding AutoLoadLastPreset}"/>
                             </StackPanel>
@@ -147,22 +147,26 @@
 
             <!-- ── About Tab ───────────────────────────────────────── -->
             <TabItem Header="About">
-                <StackPanel Margin="24" Spacing="12" VerticalAlignment="Top">
+                <StackPanel Margin="24" VerticalAlignment="Top">
                     <TextBlock Text="OverlayForge"
                                FontSize="{StaticResource FontSizeTitle}"
                                FontWeight="Bold"
-                               Foreground="{StaticResource AccentBrush}"/>
+                               Foreground="{StaticResource AccentBrush}"
+                               Margin="0,0,0,12"/>
                     <TextBlock Text="Version 1.0.0"
-                               Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Separator/>
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="0,0,0,12"/>
+                    <Separator Margin="0,0,0,12"/>
                     <TextBlock TextWrapping="Wrap"
-                               Text="A modern, lightweight transparent overlay system for gaming and design workflows. Inspired by Glass2k with modern architecture and multi-overlay support."/>
-                    <Separator/>
-                    <TextBlock Text="Default Hotkeys:" FontWeight="SemiBold"/>
+                               Text="A modern, lightweight transparent overlay system for gaming and design workflows. Inspired by Glass2k with modern architecture and multi-overlay support."
+                               Margin="0,0,0,12"/>
+                    <Separator Margin="0,0,0,12"/>
+                    <TextBlock Text="Default Hotkeys:" FontWeight="SemiBold" Margin="0,0,0,12"/>
                     <TextBlock FontFamily="{StaticResource MonoFont}" FontSize="{StaticResource FontSizeSmall}"
                                Text="Ctrl+Alt+Up    — Opacity Up&#x0a;Ctrl+Alt+Down  — Opacity Down&#x0a;Ctrl+Alt+C     — Toggle Click-Through&#x0a;Ctrl+Alt+H     — Toggle Visibility&#x0a;Ctrl+Alt+L     — Toggle Lock"
-                               Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Separator/>
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="0,0,0,12"/>
+                    <Separator Margin="0,0,0,12"/>
                     <TextBlock Text="Open Source — MIT License"
                                Foreground="{StaticResource TextSecondaryBrush}"
                                FontSize="{StaticResource FontSizeSmall}"/>
@@ -172,14 +176,16 @@
 
         <!-- Action buttons -->
         <StackPanel Grid.Row="2" Orientation="Horizontal"
-                    HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
+                    HorizontalAlignment="Right" Margin="0,12,0,0">
             <TextBlock VerticalAlignment="Center"
                        Text="{Binding StatusMessage}"
                        Foreground="{StaticResource SuccessBrush}"
-                       FontSize="{StaticResource FontSizeSmall}"/>
+                       FontSize="{StaticResource FontSizeSmall}"
+                       Margin="0,0,8,0"/>
             <Button Style="{StaticResource SecondaryButton}"
                     Command="{Binding ResetToDefaultsCommand}"
-                    Content="Reset Defaults"/>
+                    Content="Reset Defaults"
+                    Margin="0,0,8,0"/>
             <Button Style="{StaticResource PrimaryButton}"
                     Command="{Binding SaveSettingsCommand}"
                     Content="Save Settings"/>
