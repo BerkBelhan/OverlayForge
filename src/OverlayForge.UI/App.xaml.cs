@@ -20,6 +20,26 @@ namespace OverlayForge.UI;
 public partial class App : Application
 {
     private ServiceProvider? _serviceProvider;
+    // --- ADD THIS CONSTRUCTOR ---
+    public App()
+    {
+        // Catch UI thread crashes
+        this.DispatcherUnhandledException += (s, e) =>
+        {
+            MessageBox.Show($"UI Crash: {e.Exception.Message}\n\n{e.Exception.StackTrace}", "Crash", MessageBoxButton.OK, MessageBoxImage.Error);
+            e.Handled = true; 
+        };
+
+        // Catch Background thread crashes
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+        {
+            if (e.ExceptionObject is Exception ex)
+            {
+                MessageBox.Show($"Background Crash: {ex.Message}\n\n{ex.StackTrace}", "Fatal Crash", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        };
+    }
+    // ----------------------------
 
     protected override async void OnStartup(StartupEventArgs e)
     {

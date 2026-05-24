@@ -63,11 +63,30 @@ public static partial class NativeMethods
 
     // ─── P/Invoke declarations ────────────────────────────────────────────────
 
-    [LibraryImport("user32.dll", SetLastError = true)]
-    internal static partial IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+    // ─── GetWindowLongPtr Wrapper ───
+    public static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
+    {
+        return IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLong32(hWnd, nIndex);
+    }
 
-    [LibraryImport("user32.dll", SetLastError = true)]
-    internal static partial IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongW", SetLastError = true)]
+    private static partial IntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
+    private static partial IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+
+    // ─── SetWindowLongPtr Wrapper ───
+    public static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+    {
+        return IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : SetWindowLong32(hWnd, nIndex, dwNewLong);
+    }
+
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongW", SetLastError = true)]
+    private static partial IntPtr SetWindowLong32(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+    private static partial IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

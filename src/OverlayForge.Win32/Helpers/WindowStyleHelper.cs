@@ -35,19 +35,30 @@ public static class WindowStyleHelper
     /// <summary>
     /// Enables or disables click-through mode (WS_EX_TRANSPARENT).
     /// </summary>
-    public static void SetClickThrough(Window window, bool enabled)
+public static void SetClickThrough(Window window, bool isClickThrough)
     {
-        var hwnd = GetHwnd(window);
+        var hwnd = new WindowInteropHelper(window).Handle;
         if (hwnd == IntPtr.Zero) return;
 
-        var exStyle = NativeMethods.GetWindowLongPtr(hwnd, NativeMethods.GWL_EXSTYLE).ToInt64();
+        // 1. Get the current extended style of the window
+        int exStyle = (int)NativeMethods.GetWindowLongPtr(hwnd, NativeMethods.GWL_EXSTYLE);
 
-        if (enabled)
-            exStyle |= NativeMethods.WS_EX_TRANSPARENT;
+        if (isClickThrough)
+        {
+            // 2a. Add Layered and Transparent flags to make it click-through
+            exStyle |= NativeMethods.WS_EX_LAYERED | NativeMethods.WS_EX_TRANSPARENT;
+        }
         else
+        {
+            // 2b. Remove the Transparent flag so it catches clicks again
             exStyle &= ~NativeMethods.WS_EX_TRANSPARENT;
+        }
 
+        // 3. Apply the new style
         NativeMethods.SetWindowLongPtr(hwnd, NativeMethods.GWL_EXSTYLE, new IntPtr(exStyle));
+
+        // CRITICAL FIX: Do NOT call SetLayeredWindowAttributes here!
+        // We let WPF handle the actual opacity rendering natively.
     }
 
     /// <summary>

@@ -37,7 +37,9 @@ public sealed class OverlayManager : IOverlayManager
             X = 100 + _overlays.Count * 20,
             Y = 100 + _overlays.Count * 20,
             Width = 400,
-            Height = 300
+            Height = 300,
+            Opacity = 1.0,
+            IsVisible = true,
         };
 
         _overlays.Add(model);
@@ -154,7 +156,7 @@ public sealed class OverlayManager : IOverlayManager
 
     public void ShowAll()
     {
-        foreach (var overlay in _overlays)
+        foreach (var overlay in Overlays.ToList())
         {
             overlay.IsVisible = true;
             UpdateOverlay(overlay);
@@ -163,7 +165,7 @@ public sealed class OverlayManager : IOverlayManager
 
     public void HideAll()
     {
-        foreach (var overlay in _overlays)
+        foreach (var overlay in Overlays.ToList())
         {
             overlay.IsVisible = false;
             UpdateOverlay(overlay);
@@ -202,6 +204,7 @@ public sealed class OverlayManager : IOverlayManager
         {
             _overlays.Add(model);
             CreateWindow(model);
+            OverlayChanged?.Invoke(this, new OverlayChangedEventArgs(OverlayChangeType.Added, model));
         }
 
         _logger.LogInformation("Loaded {Count} overlays from preset.", _overlays.Count);

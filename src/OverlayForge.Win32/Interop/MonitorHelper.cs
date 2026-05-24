@@ -50,7 +50,7 @@ internal static partial class MonitorHelper
     {
         var areas = new List<System.Windows.Rect>();
 
-        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (hMon, _, ref rect, _) =>
+        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (IntPtr hMon, IntPtr hdc, ref RECT rect, IntPtr data) =>
         {
             var info = new MONITORINFO { cbSize = (uint)Marshal.SizeOf<MONITORINFO>() };
             if (GetMonitorInfo(hMon, ref info))

@@ -11,7 +11,6 @@
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BackgroundBrush}"
         Foreground="{StaticResource TextPrimaryBrush}">
-
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -104,7 +103,7 @@
             </TabItem>
 
             <!-- ── Hotkeys Tab ─────────────────────────────────────── -->
-            <TabItem Header="Hotkeys">
+            <TabItem Header="Hotkeys" Foreground="Black">
                 <Grid Margin="16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>

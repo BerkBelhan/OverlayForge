@@ -77,7 +77,7 @@ public sealed class OverlayWindow : Window
         {
             Width = 16,
             Height = 16,
-            Fill = new SolidColorBrush(Color.FromArgb(80, 255, 255, 255)),
+            Fill = Brushes.Transparent,
             HorizontalAlignment = HorizontalAlignment.Right,
             VerticalAlignment = VerticalAlignment.Bottom,
             Cursor = Cursors.SizeNWSE,
@@ -99,7 +99,7 @@ public sealed class OverlayWindow : Window
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        WindowStyleHelper.MakeOverlayWindow(this);
+        //WindowStyleHelper.MakeOverlayWindow(this);
         ApplyModel();
     }
 
@@ -155,8 +155,9 @@ public sealed class OverlayWindow : Window
 
         Visibility = _model.IsVisible ? Visibility.Visible : Visibility.Collapsed;
 
-        WindowStyleHelper.SetWindowOpacity(this, _model.Opacity);
+        //WindowStyleHelper.SetWindowOpacity(this, _model.Opacity);
         WindowStyleHelper.SetClickThrough(this, _model.IsClickThrough);
+        this.Opacity = _model.Opacity;
 
         UpdateImageTransforms();
         LoadImage();
@@ -193,12 +194,15 @@ public sealed class OverlayWindow : Window
     private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (_model.IsLocked || _model.IsClickThrough) return;
+        if(e.ChangedButton == MouseButton.Left)
+        {
+            this.DragMove();
+            _model.X = Left;
+            _model.Y = Top;
+            _model.ModifiedAt = DateTime.UtcNow;
+            ModelUpdated?.Invoke(this, _model);
+        }
 
-        _isDragging = true;
-        _dragOffset = e.GetPosition(this);
-        _image.CaptureMouse();
-        _image.MouseMove += Image_MouseMove;
-        _image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
     }
 
     private void Image_MouseMove(object sender, MouseEventArgs e)
@@ -240,22 +244,26 @@ public sealed class OverlayWindow : Window
         e.Handled = true;
     }
 
-    private void ResizeGrip_MouseMove(object sender, MouseEventArgs e)
+private void ResizeGrip_MouseMove(object sender, MouseEventArgs e)
     {
         if (!_isResizing) return;
-        var current = PointToScreen(e.GetPosition(this));
-        var delta = current - _resizeStart;
+        
+        // Get the mouse position relative to the window itself (DPI independent!)
+        var currentPos = e.GetPosition(this); 
 
-        double newWidth = Math.Max(50, _resizeStartSize.Width + delta.X);
+        // The new width is exactly where the mouse is on the X axis
+        double newWidth = Math.Max(50, currentPos.X);
         double newHeight;
 
+        // Maintain aspect ratio logic remains the same
         if (_model.MaintainAspectRatio && _resizeStartSize.Width > 0)
         {
             newHeight = newWidth / _resizeStartSize.Width * _resizeStartSize.Height;
         }
         else
         {
-            newHeight = Math.Max(50, _resizeStartSize.Height + delta.Y);
+            // If free-resizing, the new height is the mouse's Y axis
+            newHeight = Math.Max(50, currentPos.Y);
         }
 
         Width = newWidth;
