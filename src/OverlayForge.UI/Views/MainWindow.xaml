@@ -61,9 +61,14 @@
         </Border>
 
         <!-- ── Toolbar ────────────────────────────────────────────────── -->
-        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}"
-                Padding="8,6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+        <Border Grid.Row="1"
+                Background="{StaticResource SurfaceBrush}"
+                Padding="8,6"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,1">
+
             <StackPanel Orientation="Horizontal">
+
                 <Button Style="{StaticResource PrimaryButton}"
                         Command="{Binding OverlayList.AddOverlayFromFileCommand}"
                         ToolTip="Add overlay from image file (Ctrl+O)"
@@ -73,25 +78,49 @@
                         <TextBlock Text="Add Image" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
+
                 <Button Style="{StaticResource SecondaryButton}"
                         Command="{Binding OverlayList.AddEmptyOverlayCommand}"
                         ToolTip="Add empty overlay"
                         Margin="0,0,6,0">
                     <TextBlock Text="+ Empty"/>
                 </Button>
-                <Separator Width="1" Height="24"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,6,0"/>
+
+                <Separator Width="1"
+                        Height="24"
+                        Margin="0,0,6,0"/>
+
                 <Button Style="{StaticResource SecondaryButton}"
                         Command="{Binding OverlayList.ShowAllCommand}"
                         ToolTip="Show all overlays"
                         Margin="0,0,6,0">
                     <TextBlock Text="👁 All"/>
                 </Button>
+
                 <Button Style="{StaticResource SecondaryButton}"
                         Command="{Binding OverlayList.HideAllCommand}"
-                        ToolTip="Hide all overlays">
+                        ToolTip="Hide all overlays"
+                        Margin="0,0,12,0">
                     <TextBlock Text="🙈 Hide"/>
+                </Button>
+                <Separator Width="1" Height="24" HorizontalAlignment="Center" Margin="12,0,12,0"/>
+                <Button Style="{StaticResource SecondaryButton}" 
+                        Command="{Binding OpenLoadModalCommand}" 
+                        ToolTip="Load Preset" 
+                        Margin="0,0,6,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📂" FontSize="14" Margin="0,0,6,0"/>
+                        <TextBlock Text="Load"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource SecondaryButton}" 
+                        Command="{Binding OpenSaveModalCommand}" 
+                        ToolTip="Save Preset">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="💾" FontSize="14" Margin="0,0,6,0"/>
+                        <TextBlock Text="Save"/>
+                    </StackPanel>
                 </Button>
             </StackPanel>
         </Border>
@@ -111,10 +140,15 @@
 
             <ListBox Grid.Row="1"
                      ItemsSource="{Binding OverlayList.Overlays}"
-                     SelectedItem="{Binding OverlayList.SelectedOverlay}"
+                     SelectionMode="Extended"
                      Background="{StaticResource SurfaceBrush}"
                      BorderThickness="1"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:OverlayItemViewModel}">
                         <Border Margin="0,2" Padding="0">
@@ -174,11 +208,21 @@
                                         <ColumnDefinition Width="40"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="0"
+                                    <TextBlock Grid.Column="0" 
                                                Text="Opacity"
-                                               Foreground="{StaticResource TextSecondaryBrush}"
                                                FontSize="{StaticResource FontSizeSmall}"
-                                               VerticalAlignment="Center"/>
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
 
                                     <Slider Grid.Column="1"
                                             Value="{Binding Opacity, UpdateSourceTrigger=PropertyChanged}"
@@ -189,12 +233,18 @@
                                             VerticalAlignment="Center"
                                             Margin="6,0"/>
 
-                                    <TextBlock Grid.Column="2"
-                                               Text="{Binding Opacity, Converter={StaticResource OpacityPercent}}"
-                                               Foreground="{StaticResource AccentBrush}"
-                                               FontSize="{StaticResource FontSizeSmall}"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Opacity, Converter={StaticResource OpacityPercent}}" FontSize="{StaticResource FontSizeSmall}" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </Grid>
 
                                 <!-- Row 3: Status indicators -->
@@ -226,80 +276,48 @@
         </Grid>
 
         <!-- ── Preset Bar ─────────────────────────────────────────────── -->
-        <Border Grid.Row="3"
-                Background="{StaticResource SurfaceBrush}"
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
-                Padding="8,8">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <Border Grid.Row="3" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="12,5">
+                    <Grid>
+                        <TextBlock Text="{Binding StatusText}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}"/>
+                    </Grid>
+                </Border>
 
-                <TextBlock Grid.Row="0" Text="PRESETS"
-                           FontSize="{StaticResource FontSizeSmall}"
-                           FontWeight="SemiBold"
-                           Foreground="{StaticResource TextSecondaryBrush}"
-                           Margin="0,0,0,6"/>
-
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <ComboBox Grid.Column="0"
-                              ItemsSource="{Binding Presets}"
-                              SelectedItem="{Binding SelectedPreset}"
-                              DisplayMemberPath="Name"
-                              Margin="0,0,6,0"/>
-
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Style="{StaticResource SecondaryButton}"
-                                Command="{Binding LoadSelectedPresetCommand}"
-                                ToolTip="Load selected preset"
-                                Content="Load"
-                                Margin="0,0,4,0"/>
-                        <Button Style="{StaticResource SecondaryButton}"
-                                Command="{Binding SavePresetCommand}"
-                                ToolTip="Save current overlays as new preset"
-                                Content="Save"
-                                Margin="0,0,4,0"/>
-                        <Button Style="{StaticResource IconButton}"
-                                Command="{Binding ExportPresetCommand}"
-                                ToolTip="Export preset"
-                                Content="⬆" FontSize="14"
-                                Margin="0,0,4,0"/>
-                        <Button Style="{StaticResource IconButton}"
-                                Command="{Binding ImportPresetCommand}"
-                                ToolTip="Import preset"
-                                Content="⬇" FontSize="14"
-                                Margin="0,0,4,0"/>
-                        <Button Style="{StaticResource IconButton}"
-                                Command="{Binding DeleteSelectedPresetCommand}"
-                                ToolTip="Delete selected preset"
-                                Foreground="{StaticResource DangerBrush}"
-                                Content="✕" FontSize="12"/>
+        <Grid Grid.RowSpan="4" Background="#CC000000" Panel.ZIndex="100" 
+                Visibility="{Binding IsSaveModalOpen, Converter={StaticResource BoolToVis}}">
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="1" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                        Padding="28" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Save Selected Overlays" FontSize="{StaticResource FontSizeLarge}" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                        <TextBlock Text="Preset Name:" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        
+                        <TextBox Text="{Binding NewPresetName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,30" Padding="8,6"/>
+                        
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource SecondaryButton}" Content="Cancel" Command="{Binding CloseModalsCommand}" Margin="0,0,8,0"/>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Save Preset" Command="{Binding ConfirmSavePresetCommand}"/>
+                        </StackPanel>
                     </StackPanel>
-                </Grid>
+                </Border>
             </Grid>
-        </Border>
 
-        <!-- ── Status Bar ─────────────────────────────────────────────── -->
-        <Border Grid.Row="4"
-                Background="{StaticResource SurfaceBrush}"
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0"
-                Padding="12,5">
-            <Grid>
-                <TextBlock Text="{Binding StatusText}"
-                           Foreground="{StaticResource TextSecondaryBrush}"
-                           FontSize="{StaticResource FontSizeSmall}"/>
-                <TextBlock HorizontalAlignment="Right"
-                           Text="Ctrl+Alt+H: Hide  |  Ctrl+Alt+C: Click-Through"
-                           Foreground="{StaticResource TextSecondaryBrush}"
-                           FontSize="{StaticResource FontSizeSmall}"
-                           Opacity="0.7"/>
-            </Grid>
-        </Border>
+            <Grid Grid.RowSpan="4" Background="#CC000000" Panel.ZIndex="100" 
+                Visibility="{Binding IsLoadModalOpen, Converter={StaticResource BoolToVis}}">
+                <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="1" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                        Padding="28" Width="450">
+                    <StackPanel>
+                        <TextBlock Text="Load Preset" FontSize="{StaticResource FontSizeLarge}" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                        
+                        <ListBox ItemsSource="{Binding Presets}" SelectedItem="{Binding SelectedPreset}" 
+                                DisplayMemberPath="Name" Height="220" Margin="0,0,0,30"/>
+                        
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource SecondaryButton}" Content="Cancel" Command="{Binding CloseModalsCommand}" Margin="0,0,8,0"/>
+                            <Button Style="{StaticResource PrimaryButton}" Content="Load Selected" Command="{Binding ConfirmLoadPresetCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

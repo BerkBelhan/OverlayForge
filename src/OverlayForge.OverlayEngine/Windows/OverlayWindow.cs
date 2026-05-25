@@ -63,6 +63,7 @@ public sealed class OverlayWindow : Window
             StretchDirection = StretchDirection.Both,
             RenderTransformOrigin = new Point(0.5, 0.5)
         };
+        RenderOptions.SetBitmapScalingMode(_image, BitmapScalingMode.HighQuality);
 
         UpdateImageTransforms();
 
@@ -108,12 +109,14 @@ public sealed class OverlayWindow : Window
     /// </summary>
     public void LoadImage()
     {
-        if (string.IsNullOrEmpty(_model.ImagePath) || !File.Exists(_model.ImagePath))
+
+        if(string.IsNullOrEmpty(_model.ImagePath) || !File.Exists(_model.ImagePath))
         {
             _image.Source = null;
+            _border.Background = new SolidColorBrush(Color.FromArgb(128, 0, 0, 0)); // Semi-transparent black for empty overlays
             return;
         }
-
+        _border.Background = Brushes.Transparent;
         try
         {
             var bitmap = new BitmapImage();
@@ -127,10 +130,22 @@ public sealed class OverlayWindow : Window
             // Auto-size if model dimensions are default
             if (_model.Width <= 10 || _model.Height <= 10)
             {
-                _model.Width = bitmap.PixelWidth;
-                _model.Height = bitmap.PixelHeight;
-                Width = _model.Width;
-                Height = _model.Height;
+                double w = bitmap.PixelWidth;
+                double h = bitmap.PixelHeight;
+                double maxDim = 800.0; // Max allowed width OR height
+
+                // If EITHER dimension is too big, scale it down proportionally
+                if (w > maxDim || h > maxDim)
+                {
+                    double ratio = Math.Min(maxDim / w, maxDim / h);
+                    w *= ratio;
+                    h *= ratio;
+                }
+
+                _model.Width = w;
+                _model.Height = h;
+                Width = w;
+                Height = h;
             }
 
             _logger.LogDebug("Loaded image {Path} ({W}x{H})", _model.ImagePath, bitmap.PixelWidth, bitmap.PixelHeight);

@@ -36,8 +36,8 @@ public sealed class OverlayManager : IOverlayManager
             ZOrder = _overlays.Count,
             X = 100 + _overlays.Count * 20,
             Y = 100 + _overlays.Count * 20,
-            Width = 400,
-            Height = 300,
+            Width = 0,
+            Height = 0,
             Opacity = 1.0,
             IsVisible = true,
         };
@@ -195,19 +195,30 @@ public sealed class OverlayManager : IOverlayManager
     public void LoadFromPreset(IEnumerable<OverlayModel> presetOverlays)
     {
         // Close all existing windows
-        foreach (var w in _windows.Values)
-            w.Close();
-        _windows.Clear();
-        _overlays.Clear();
-
         foreach (var model in presetOverlays)
         {
+           var newOverlay = model.Clone();
+            newOverlay.Id = Guid.NewGuid(); // Ensure unique ID for each overlay
+
+            newOverlay.Name = $"Overlay {_overlays.Count + 1} (Preset)";
+            
+            _overlays.Add(newOverlay);
+            CreateWindow(newOverlay);
+            OverlayChanged?.Invoke(this, new OverlayChangedEventArgs(OverlayChangeType.Added, newOverlay));           
+        }
+        _logger.LogInformation("Loaded overlays from preset. Total active {Count}:", _overlays.Count);
+    }
+
+    public void AppendPreset(IEnumerable<OverlayModel> presetOverlays)
+    {
+        foreach (var model in presetOverlays)
+        {
+            model.Id = Guid.NewGuid(); // Ensure unique ID for each overlay
             _overlays.Add(model);
             CreateWindow(model);
             OverlayChanged?.Invoke(this, new OverlayChangedEventArgs(OverlayChangeType.Added, model));
         }
-
-        _logger.LogInformation("Loaded {Count} overlays from preset.", _overlays.Count);
+        _logger.LogInformation("Appended {Count} overlays from preset.", presetOverlays.Count());
     }
 
     private void CreateWindow(OverlayModel model)

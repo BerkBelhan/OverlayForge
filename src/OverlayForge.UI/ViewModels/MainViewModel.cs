@@ -25,8 +25,10 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _statusText = "Ready";
     [ObservableProperty] private bool _isPresetLoading;
     [ObservableProperty] private OverlayPreset? _selectedPreset;
-
-    public MainViewModel(
+    [ObservableProperty] private string _newPresetName = string.Empty;
+    [ObservableProperty] private bool _isSaveModalOpen;
+    [ObservableProperty] private bool _isLoadModalOpen;
+        public MainViewModel(
         IOverlayManager overlayManager,
         IPresetService presetService,
         ISettingsService settingsService,
@@ -63,21 +65,67 @@ public sealed partial class MainViewModel : ObservableObject
             Presets.Add(preset);
     }
 
-    [RelayCommand]
-    private async Task SavePresetAsync()
-    {
-        var name = $"Preset {DateTime.Now:yyyy-MM-dd HH:mm}";
-        var preset = await _presetService.SavePresetAsync(name, _overlayManager.Overlays);
-        RefreshPresets();
-        StatusText = $"Saved preset: {preset.Name}";
-        _logger.LogInformation("Saved preset '{Name}'", preset.Name);
+    // --- MODAL CONTROLS ---
+    [RelayCommand] private void OpenSaveModal() => IsSaveModalOpen = true;
+    
+    [RelayCommand] private void OpenLoadModal() 
+    { 
+        RefreshPresets(); 
+        IsLoadModalOpen = true; 
+    }
+    
+    [RelayCommand] private void CloseModals() 
+    { 
+        IsSaveModalOpen = false; 
+        IsLoadModalOpen = false; 
+        NewPresetName = string.Empty; 
     }
 
+    // --- EXECUTE ACTIONS ---
     [RelayCommand]
-    private async Task LoadSelectedPresetAsync()
+    private async Task ConfirmSavePresetAsync()
     {
-        if (SelectedPreset is null) return;
-        await LoadPresetByIdAsync(SelectedPreset.Id);
+        // 1. Grab any explicitly selected overlays (Ctrl+Click)
+        var selectedOverlays = OverlayList.Overlays
+            .Where(o => o.IsSelected)
+            .Select(o => o.Model)
+            .ToList();
+
+        // 2. SMART FALLBACK: If nothing is selected, assume they want to save EVERYTHING
+        if (!selectedOverlays.Any())
+        {
+            selectedOverlays = OverlayList.Overlays.Select(o => o.Model).ToList();
+        }
+
+        // 3. If there are literally 0 overlays loaded in the app, abort
+        if (!selectedOverlays.Any())
+        {
+            StatusText = "Error: No active overlays to save!";
+            CloseModals();
+            return;
+        }
+
+        var name = string.IsNullOrWhiteSpace(NewPresetName) 
+            ? $"Preset {DateTime.Now:yyyy-MM-dd HH:mm}" 
+            : NewPresetName;
+
+        var preset = await _presetService.SavePresetAsync(name, selectedOverlays);
+        
+        // 4. Force the list to refresh so it appears in the Load Modal immediately
+        RefreshPresets();
+        StatusText = $"Saved {selectedOverlays.Count} overlays as: {preset.Name}";
+        
+        CloseModals();
+    }
+    
+    [RelayCommand]
+    private async Task ConfirmLoadPresetAsync()
+    {
+        if (SelectedPreset is not null)
+        {
+            await LoadPresetByIdAsync(SelectedPreset.Id);
+        }
+        CloseModals();
     }
 
     [RelayCommand]

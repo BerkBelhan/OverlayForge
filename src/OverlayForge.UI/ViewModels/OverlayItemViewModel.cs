@@ -12,6 +12,7 @@ namespace OverlayForge.UI.ViewModels;
 /// </summary>
 public sealed partial class OverlayItemViewModel : ObservableObject
 {
+    public OverlayModel Model { get; }
     private readonly IOverlayManager _overlayManager;
 
     [ObservableProperty] private string _name;
@@ -27,6 +28,7 @@ public sealed partial class OverlayItemViewModel : ObservableObject
     public OverlayItemViewModel(OverlayModel model, IOverlayManager overlayManager)
     {
         _overlayManager = overlayManager;
+        Model = model;
         Id = model.Id;
         _name = model.Name;
         _opacity = model.Opacity;
